@@ -46,6 +46,7 @@ public class GetOrderTest extends BaseTest {
         Response response = orderAPI.getOrders("");
         response.then().assertThat()
                 .body("success", equalTo(false))
+                .body("message", equalTo("You should be authorised")) // Проверяем текст ошибки
                 .and()
                 .statusCode(SC_UNAUTHORIZED);
     }
