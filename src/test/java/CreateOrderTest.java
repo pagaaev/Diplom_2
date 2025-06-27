@@ -34,12 +34,14 @@ public class CreateOrderTest {
         ingredientIds.add(ingredients.get(1).get_id());
         ingredientIds.add(ingredients.get(2).get_id());
         Response response = orderAPI.createOrder(ingredientIds, accessToken);
-        response.then().assertThat().body("success", equalTo(true))
-                .and()
-                .statusCode(SC_OK);
+
+        // Сначала проверяем статус
+        response.then().assertThat().statusCode(SC_OK);
+        // Потом проверяем тело
+        response.then().assertThat().body("success", equalTo(true));
+
         userAPI.deleteUser(accessToken);
     }
-
 
     @Test
     @DisplayName("Check status code of create order by unauthorized user")
@@ -50,9 +52,9 @@ public class CreateOrderTest {
         ingredientIds.add(ingredients.get(1).get_id());
         ingredientIds.add(ingredients.get(2).get_id());
         Response response = orderAPI.createOrder(ingredientIds, "");
-        response.then().assertThat().body("success", equalTo(true))
-                .and()
-                .statusCode(SC_OK);
+
+        response.then().assertThat().statusCode(SC_OK);
+        response.then().assertThat().body("success", equalTo(true));
     }
 
     @Test
@@ -61,9 +63,10 @@ public class CreateOrderTest {
         String accessToken = userAPI.createUser();
         List<String> ingredientIds = new ArrayList<>();
         Response response = orderAPI.createOrder(ingredientIds, accessToken);
-        response.then().assertThat().body("success", equalTo(false))
-                .and()
-                .statusCode(SC_BAD_REQUEST);
+
+        response.then().assertThat().statusCode(SC_BAD_REQUEST);
+        response.then().assertThat().body("success", equalTo(false));
+
         userAPI.deleteUser(accessToken);
     }
 
@@ -74,8 +77,9 @@ public class CreateOrderTest {
         List<String> ingredientIds = new ArrayList<>();
         ingredientIds.add("wrongid");
         Response response = orderAPI.createOrder(ingredientIds, accessToken);
-        response.then().assertThat()
-                .statusCode(SC_INTERNAL_SERVER_ERROR);
+
+        response.then().assertThat().statusCode(SC_INTERNAL_SERVER_ERROR);
+
         userAPI.deleteUser(accessToken);
     }
 }
