@@ -1,7 +1,7 @@
 package org.example;
 
 public class Ingredient {
-    private String _id;
+    private String id;
     private String name;
     private String type;
     private int proteins;
@@ -10,8 +10,8 @@ public class Ingredient {
     private int calories;
     private int price;
 
-    public Ingredient(String _id, String name, String type, int proteins, int fat, int carbohydrates, int calories, int price) {
-        this._id = _id;
+    public Ingredient(String id, String name, String type, int proteins, int fat, int carbohydrates, int calories, int price) {
+        this.id = id;
         this.name = name;
         this.type = type;
         this.proteins = proteins;
@@ -21,12 +21,12 @@ public class Ingredient {
         this.price = price;
     }
 
-    public String get_id() {
-        return _id;
+    public String getId() {
+        return id;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
