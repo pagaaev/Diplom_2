@@ -4,20 +4,32 @@ import io.restassured.response.Response;
 import org.example.User;
 import org.example.UserAPI;
 import org.example.UserUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.text.IsEqualIgnoringCase.equalToIgnoringCase;
 
-public class UserTest {
+public class UserTest extends BaseTest {
+
     private UserAPI userAPI;
-    private String accessToken; // для удаления в @After (если добавишь)
+    private String accessToken;
 
     @Before
     public void setUp() {
         userAPI = new UserAPI();
+        accessToken = null;
+    }
+
+    @After
+    public void tearDown() {
+        if (accessToken != null && !accessToken.isEmpty()) {
+            deleteUser(accessToken);
+            accessToken = null;
+        }
     }
 
     @Step("Создать пользователя: {user.email}")
@@ -40,13 +52,15 @@ public class UserTest {
     public void changeAuthorizedUserTest() {
         User user = UserUtils.getRandomUser();
         Response createResponse = createUser(user);
-        User changedUser = UserUtils.getRandomUser();
         accessToken = createResponse.path("accessToken");
+
+        User changedUser = UserUtils.getRandomUser();
         Response changeResponse = changeUser(changedUser, accessToken);
 
         changeResponse.then().assertThat().body("success", equalTo(true))
                 .and()
                 .statusCode(SC_OK);
+
         String email = changeResponse.path("user.email");
         String name = changeResponse.path("user.name");
 
@@ -59,7 +73,6 @@ public class UserTest {
                 .statusCode(SC_OK);
 
         accessToken = loginResponse.path("accessToken");
-        deleteUser(accessToken);
     }
 
     @Test
@@ -68,12 +81,14 @@ public class UserTest {
         User firstUser = UserUtils.getRandomUser();
         Response createFirstUserResponse = createUser(firstUser);
         String firstUserAccessToken = createFirstUserResponse.path("accessToken");
+
         User secondUser = UserUtils.getRandomUser();
         Response createSecondUserResponse = createUser(secondUser);
         String secondUserAccessToken = createSecondUserResponse.path("accessToken");
 
         firstUser.setEmail(secondUser.getEmail());
         Response changeResponse = changeUser(firstUser, firstUserAccessToken);
+
         changeResponse.then().assertThat().body("success", equalTo(false))
                 .and()
                 .statusCode(SC_FORBIDDEN);
@@ -88,11 +103,12 @@ public class UserTest {
         User user = UserUtils.getRandomUser();
         Response createResponse = createUser(user);
         accessToken = createResponse.path("accessToken");
+
         User changedUser = UserUtils.getRandomUser();
         Response changeResponse = changeUser(changedUser, "");
+
         changeResponse.then().assertThat().body("success", equalTo(false))
                 .and()
                 .statusCode(SC_UNAUTHORIZED);
-        deleteUser(accessToken);
     }
 }

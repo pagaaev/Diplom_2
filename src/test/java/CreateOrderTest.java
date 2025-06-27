@@ -1,5 +1,5 @@
+import base.BaseTest; // Импорт базового класса с настройкой baseURI
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.example.Ingredient;
 import org.example.OrderAPI;
@@ -14,7 +14,7 @@ import java.util.List;
 import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 
-public class CreateOrderTest {
+public class CreateOrderTest extends BaseTest {  // Наследуемся от BaseTest
 
     private OrderAPI orderAPI;
     private UserAPI userAPI;
@@ -22,7 +22,6 @@ public class CreateOrderTest {
 
     @Before
     public void setUp() {
-        RestAssured.baseURI = "https://stellarburgers.nomoreparties.site";
         orderAPI = new OrderAPI();
         userAPI = new UserAPI();
         accessToken = userAPI.createUser();
@@ -40,9 +39,9 @@ public class CreateOrderTest {
     public void createOrderTest() {
         List<Ingredient> ingredients = orderAPI.getIngredients();
         List<String> ingredientIds = new ArrayList<>();
-        ingredientIds.add(ingredients.get(0).get_id());
-        ingredientIds.add(ingredients.get(1).get_id());
-        ingredientIds.add(ingredients.get(2).get_id());
+        ingredientIds.add(ingredients.get(0).getId());
+        ingredientIds.add(ingredients.get(1).getId());
+        ingredientIds.add(ingredients.get(2).getId());
 
         Response response = orderAPI.createOrder(ingredientIds, accessToken);
         response.then().assertThat()
@@ -79,14 +78,9 @@ public class CreateOrderTest {
     public void createOrderByUnauthorizedUserTest() {
         List<Ingredient> ingredients = orderAPI.getIngredients();
         List<String> ingredientIds = new ArrayList<>();
-        ingredientIds.add(ingredients.get(0).get_id());
-        ingredientIds.add(ingredients.get(1).get_id());
-        ingredientIds.add(ingredients.get(2).get_id());
+        ingredientIds.add(ingredients.get(0).getId());
+        ingredientIds.add(ingredients.get(1).getId());
+        ingredientIds.add(ingredients.get(2).getId());
 
         Response response = orderAPI.createOrder(ingredientIds, "");
         response.then().assertThat()
-                .statusCode(SC_OK)
-                .and()
-                .body("success", equalTo(true));
-    }
-}

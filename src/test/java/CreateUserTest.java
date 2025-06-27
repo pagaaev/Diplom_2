@@ -1,5 +1,5 @@
+import base.BaseTest;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.example.User;
 import org.example.UserAPI;
@@ -11,15 +11,10 @@ import org.junit.Test;
 import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 
-public class CreateUserTest {
+public class CreateUserTest extends BaseTest {
 
     private UserAPI userAPI;
     private String accessToken;
-
-    // Базовый URI можно задать один раз в статическом блоке
-    static {
-        RestAssured.baseURI = "https://stellarburgers.nomoreparties.site";
-    }
 
     @Before
     public void setUp() {
@@ -29,7 +24,6 @@ public class CreateUserTest {
 
     @After
     public void tearDown() {
-        // Удаляем пользователя, если accessToken получен
         if (accessToken != null) {
             userAPI.deleteUser(accessToken);
         }
@@ -58,7 +52,7 @@ public class CreateUserTest {
         createDoubleResponse.then().assertThat()
                 .statusCode(SC_FORBIDDEN)
                 .body("success", equalTo(false))
-                .body("message", equalTo("User already exists"));  // пример сообщения об ошибке
+                .body("message", equalTo("User already exists"));
     }
 
     @Test
@@ -70,7 +64,7 @@ public class CreateUserTest {
         createResponse.then().assertThat()
                 .statusCode(SC_FORBIDDEN)
                 .body("success", equalTo(false))
-                .body("message", equalTo("Email, password and name are required fields"));  // пример сообщения
+                .body("message", equalTo("Email, password and name are required fields"));
     }
 
     @Test
@@ -82,7 +76,7 @@ public class CreateUserTest {
         createResponse.then().assertThat()
                 .statusCode(SC_FORBIDDEN)
                 .body("success", equalTo(false))
-                .body("message", equalTo("Email, password and name are required fields"));  // пример сообщения
+                .body("message", equalTo("Email, password and name are required fields"));
     }
 
     @Test
@@ -94,6 +88,6 @@ public class CreateUserTest {
         createResponse.then().assertThat()
                 .statusCode(SC_FORBIDDEN)
                 .body("success", equalTo(false))
-                .body("message", equalTo("Email, password and name are required fields"));  // пример сообщения
+                .body("message", equalTo("Email, password and name are required fields"));
     }
 }
