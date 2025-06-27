@@ -24,7 +24,8 @@ public class LoginUserTest extends BaseTest {
         User user = UserUtils.getRandomUser();
         userAPI.createUser(user);
         Response loginResponse = userAPI.loginUser(user);
-        loginResponse.then().assertThat().body("success", equalTo(true))
+        loginResponse.then().assertThat()
+                .body("success", equalTo(true))
                 .and()
                 .statusCode(SC_OK);
         String accessToken = loginResponse.path("accessToken");
@@ -36,7 +37,9 @@ public class LoginUserTest extends BaseTest {
     public void loginUserWithWrongEmailTest() {
         User user = UserUtils.getRandomUser();
         Response loginResponse = userAPI.loginUser(user);
-        loginResponse.then().assertThat().body("success", equalTo(false))
+        loginResponse.then().assertThat()
+                .body("success", equalTo(false))
+                .body("message", equalTo("email or password are incorrect")) // Добавлена проверка текста ошибки
                 .and()
                 .statusCode(SC_UNAUTHORIZED);
     }
@@ -48,7 +51,9 @@ public class LoginUserTest extends BaseTest {
         Response createResponse = userAPI.createUser(user);
         user.setPassword(user.getPassword() + "1230");
         Response loginResponse = userAPI.loginUser(user);
-        loginResponse.then().assertThat().body("success", equalTo(false))
+        loginResponse.then().assertThat()
+                .body("success", equalTo(false))
+                .body("message", equalTo("email or password are incorrect")) // Добавлена проверка текста ошибки
                 .and()
                 .statusCode(SC_UNAUTHORIZED);
         String accessToken = createResponse.path("accessToken");
