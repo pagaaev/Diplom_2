@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import io.qameta.allure.Step;
 import io.restassured.response.Response;
 
 import java.util.HashMap;
@@ -16,6 +17,7 @@ public class OrderAPI {
     private static final String ORDER_URL = "/api/orders/";
     private static final String INGREDIENT_URL = "/api/ingredients/";
 
+    @Step("Получение списка ингредиентов")
     public List<Ingredient> getIngredients() {
         Response response = given().get(INGREDIENT_URL);
         JsonParser jsonParser = new JsonParser();
@@ -27,26 +29,24 @@ public class OrderAPI {
         }.getType());
     }
 
+    @Step("Создание заказа с ингредиентами: {ingredientIds}")
     public Response createOrder(List<String> ingredientIds, String accessToken) {
         Map<String, List<String>> requestParams = new HashMap<>();
         requestParams.put("ingredients", ingredientIds);
 
-        Response response =
-                given()
-                        .header("Content-type", "application/json")
-                        .header("Authorization", accessToken)
-                        .and()
-                        .body(requestParams)
-                        .when()
-                        .post(ORDER_URL);
-        return response;
+        return given()
+                .header("Content-type", "application/json")
+                .header("Authorization", accessToken)
+                .and()
+                .body(requestParams)
+                .when()
+                .post(ORDER_URL);
     }
 
+    @Step("Получение заказов текущего пользователя")
     public Response getOrders(String accessToken) {
-        Response response =
-                given()
-                        .header("Authorization", accessToken)
-                        .get(ORDER_URL);
-        return response;
+        return given()
+                .header("Authorization", accessToken)
+                .get(ORDER_URL);
     }
 }
