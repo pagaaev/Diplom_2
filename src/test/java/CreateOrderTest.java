@@ -1,4 +1,4 @@
-import base.BaseTest; // Импорт базового класса с настройкой baseURI
+import base.BaseTest; // Наследуемся от базового класса с baseURI
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
 import org.example.Ingredient;
@@ -14,7 +14,7 @@ import java.util.List;
 import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 
-public class CreateOrderTest extends BaseTest {  // Наследуемся от BaseTest
+public class CreateOrderTest extends BaseTest {
 
     private OrderAPI orderAPI;
     private UserAPI userAPI;
@@ -67,10 +67,13 @@ public class CreateOrderTest extends BaseTest {  // Наследуемся от 
         List<String> ingredientIds = new ArrayList<>();
 
         Response response = orderAPI.createOrder(ingredientIds, accessToken);
+
+        // Убедись, что в твоем API такое сообщение об ошибке, если нет - поменяй текст
         response.then().assertThat()
                 .statusCode(SC_BAD_REQUEST)
                 .and()
-                .body("success", equalTo(false));
+                .body("success", equalTo(false))
+                .body("message", equalTo("Ingredient ids must be provided"));
     }
 
     @Test
@@ -84,3 +87,8 @@ public class CreateOrderTest extends BaseTest {  // Наследуемся от 
 
         Response response = orderAPI.createOrder(ingredientIds, "");
         response.then().assertThat()
+                .statusCode(SC_OK)
+                .and()
+                .body("success", equalTo(true));
+    }
+}
