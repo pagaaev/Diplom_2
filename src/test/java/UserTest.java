@@ -57,7 +57,8 @@ public class UserTest extends BaseTest {
         User changedUser = UserUtils.getRandomUser();
         Response changeResponse = changeUser(changedUser, accessToken);
 
-        changeResponse.then().assertThat().body("success", equalTo(true))
+        changeResponse.then().assertThat()
+                .body("success", equalTo(true))
                 .and()
                 .statusCode(SC_OK);
 
@@ -68,7 +69,8 @@ public class UserTest extends BaseTest {
         Assert.assertThat(name, equalToIgnoringCase(changedUser.getName()));
 
         Response loginResponse = userAPI.loginUser(changedUser);
-        loginResponse.then().assertThat().body("success", equalTo(true))
+        loginResponse.then().assertThat()
+                .body("success", equalTo(true))
                 .and()
                 .statusCode(SC_OK);
 
@@ -91,7 +93,7 @@ public class UserTest extends BaseTest {
 
         changeResponse.then().assertThat()
                 .body("success", equalTo(false))
-                .body("message", equalTo("User with such email already exists")) // проверь текст ошибки
+                .body("message", equalTo("User with such email already exists"))
                 .and()
                 .statusCode(SC_FORBIDDEN);
 
@@ -109,7 +111,9 @@ public class UserTest extends BaseTest {
         User changedUser = UserUtils.getRandomUser();
         Response changeResponse = changeUser(changedUser, "");
 
-        changeResponse.then().assertThat().body("success", equalTo(false))
+        changeResponse.then().assertThat()
+                .body("success", equalTo(false))
+                .body("message", equalTo("You should be authorised"))
                 .and()
                 .statusCode(SC_UNAUTHORIZED);
     }
