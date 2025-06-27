@@ -89,7 +89,9 @@ public class UserTest extends BaseTest {
         firstUser.setEmail(secondUser.getEmail());
         Response changeResponse = changeUser(firstUser, firstUserAccessToken);
 
-        changeResponse.then().assertThat().body("success", equalTo(false))
+        changeResponse.then().assertThat()
+                .body("success", equalTo(false))
+                .body("message", equalTo("User with such email already exists")) // проверь текст ошибки
                 .and()
                 .statusCode(SC_FORBIDDEN);
 
